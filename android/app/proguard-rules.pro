@@ -1,0 +1,4 @@
+-dontwarn java.beans.**
+-dontwarn org.yaml.snakeyaml.**
+-keep class org.yaml.snakeyaml.** { *; }
+-keep class com.ultralytics.** { *; }
