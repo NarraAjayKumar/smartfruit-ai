@@ -37,6 +37,22 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+// --- ROOT LANDING ---
+app.get('/', (req, res) => {
+    res.send(`
+        <div style="font-family: sans-serif; text-align: center; padding: 50px; background: #0f172a; color: white; height: 100vh; display: flex; flex-direction: column; justify-content: center; margin: 0;">
+            <h1 style="color: #22c55e; font-size: 2.5rem;">🛰️ SmartFruit AI API</h1>
+            <p style="font-size: 1.2rem;">The production backend is <b>LIVE</b> and running on Render Cloud.</p>
+            <p style="color: #94a3b8;">Status: <span style="color: #22c55e;">● Online</span></p>
+            <div style="margin-top: 20px; padding: 15px; background: #1e293b; border-radius: 8px; display: inline-block;">
+                <code>Endpoint: /api/health → <span style="color: #22c55e;">Working</span></code>
+            </div>
+            <hr style="width: 100px; border: 0; border-top: 1px solid #334155; margin: 40px auto;" />
+            <p style="font-size: 0.9rem; color: #64748b;">© 2026 SmartFruit AI - Globally Accessible Production System</p>
+        </div>
+    `);
+});
+
 // --- HEALTH CHECK ---
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: '🚀 SmartFruit AI Server is REACHABLE!' });
