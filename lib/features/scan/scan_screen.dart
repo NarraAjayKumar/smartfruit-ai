@@ -22,15 +22,12 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   FlashMode _flashMode = FlashMode.off;
   CameraLensDirection _lensDirection = CameraLensDirection.back;
 
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Lock to portrait for professional camera feel
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _initCamera();
   }
 
@@ -67,7 +64,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
       );
       await ctrl.initialize();
       await ctrl.setFlashMode(_flashMode);
-
 
       if (!mounted) {
         ctrl.dispose();
@@ -113,7 +109,9 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
   Future<void> _toggleFlash() async {
     if (_controller == null) return;
-    final newMode = _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
+    final newMode = _flashMode == FlashMode.off
+        ? FlashMode.torch
+        : FlashMode.off;
     try {
       await _controller!.setFlashMode(newMode);
       setState(() => _flashMode = newMode);
@@ -124,21 +122,24 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
   Future<void> _toggleCamera() async {
     if (_controller == null || _isProcessing) return;
-    _lensDirection = _lensDirection == CameraLensDirection.back 
-        ? CameraLensDirection.front 
+    _lensDirection = _lensDirection == CameraLensDirection.back
+        ? CameraLensDirection.front
         : CameraLensDirection.back;
     await _initCamera();
   }
 
   Color _getCropColor() {
     switch (widget.cropName.toLowerCase()) {
-      case 'tomato':     return const Color(0xFFE53935); // Red
-      case 'watermelon': return const Color(0xFF1B5E20); // Dark Green
-      case 'cucumber':   return const Color(0xFF43A047); // Green
-      default:           return const Color(0xFF43A047);
+      case 'tomato':
+        return const Color(0xFFE53935); // Red
+      case 'watermelon':
+        return const Color(0xFF1B5E20); // Dark Green
+      case 'cucumber':
+        return const Color(0xFF43A047); // Green
+      default:
+        return const Color(0xFF43A047);
     }
   }
-
 
   Future<void> _runInference(String path) async {
     final result = await LocalAiService.predict(path, widget.cropName);
@@ -154,7 +155,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
       _showWrongFruitAlert(result['suggestedCrop'] ?? 'another fruit');
       return;
     }
-
 
     Navigator.push(
       context,
@@ -172,7 +172,9 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   void _showNoFruit() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Not a fruit recognized. Please point to a valid fruit.'),
+        content: const Text(
+          'Not a fruit recognized. Please point to a valid fruit.',
+        ),
         backgroundColor: Colors.orange.shade800,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -188,9 +190,16 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 30),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orange,
+              size: 30,
+            ),
             const SizedBox(width: 10),
-            const Text('Wrong Fruit Section', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Wrong Fruit Section',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ],
         ),
         content: Text(
@@ -200,13 +209,18 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('OK', style: TextStyle(color: _getCropColor(), fontWeight: FontWeight.bold)),
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: _getCropColor(),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +242,12 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               ),
             )
           else
-            const Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+            const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            ),
 
           // 2. Scanning Guide (Brackets)
           Positioned.fill(
@@ -238,7 +257,6 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-
 
           // 3. UI Overlays (Glassmorphic)
           SafeArea(
@@ -262,11 +280,18 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                        CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
                         SizedBox(height: 16),
                         Text(
                           "Analyzing Fruit...",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -292,7 +317,11 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(width: 8),
@@ -308,12 +337,15 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                 const Spacer(),
                 IconButton(
                   icon: Icon(
-                    _flashMode == FlashMode.torch ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                    color: _flashMode == FlashMode.torch ? _getCropColor() : Colors.white.withOpacity(0.5),
+                    _flashMode == FlashMode.torch
+                        ? Icons.flash_on_rounded
+                        : Icons.flash_off_rounded,
+                    color: _flashMode == FlashMode.torch
+                        ? _getCropColor()
+                        : Colors.white.withOpacity(0.5),
                   ),
                   onPressed: _toggleFlash,
                 ),
-
               ],
             ),
           ),
@@ -348,7 +380,10 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: _getCropColor().withOpacity(0.4), width: 3),
+                      border: Border.all(
+                        color: _getCropColor().withOpacity(0.4),
+                        width: 3,
+                      ),
                     ),
                     child: Container(
                       height: 70,
@@ -357,12 +392,21 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
                         color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
                         ],
                       ),
-                      child: _isProcessing 
-                        ? const Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 3))
-                        : null,
+                      child: _isProcessing
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -380,7 +424,10 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildCircleIcon({required IconData icon, required VoidCallback? onPressed}) {
+  Widget _buildCircleIcon({
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: _getCropColor().withOpacity(0.2),
@@ -406,30 +453,61 @@ class ScanningGuidePainter extends CustomPainter {
       ..strokeWidth = 3.0
       ..strokeCap = StrokeCap.round;
 
-
     final double length = 40.0;
     final double margin = size.width * 0.15;
     final double innerW = size.width - (margin * 2);
     final double innerH = size.height * 0.45; // Center focused rect
     final double top = (size.height - innerH) / 2;
-    
+
     final rect = Rect.fromLTWH(margin, top, innerW, innerH);
 
     // Top Left
-    canvas.drawLine(Offset(rect.left, rect.top + length), Offset(rect.left, rect.top), paint);
-    canvas.drawLine(Offset(rect.left, rect.top), Offset(rect.left + length, rect.top), paint);
+    canvas.drawLine(
+      Offset(rect.left, rect.top + length),
+      Offset(rect.left, rect.top),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(rect.left, rect.top),
+      Offset(rect.left + length, rect.top),
+      paint,
+    );
 
     // Top Right
-    canvas.drawLine(Offset(rect.right - length, rect.top), Offset(rect.right, rect.top), paint);
-    canvas.drawLine(Offset(rect.right, rect.top), Offset(rect.right, rect.top + length), paint);
+    canvas.drawLine(
+      Offset(rect.right - length, rect.top),
+      Offset(rect.right, rect.top),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(rect.right, rect.top),
+      Offset(rect.right, rect.top + length),
+      paint,
+    );
 
     // Bottom Left
-    canvas.drawLine(Offset(rect.left, rect.bottom - length), Offset(rect.left, rect.bottom), paint);
-    canvas.drawLine(Offset(rect.left, rect.bottom), Offset(rect.left + length, rect.bottom), paint);
+    canvas.drawLine(
+      Offset(rect.left, rect.bottom - length),
+      Offset(rect.left, rect.bottom),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(rect.left, rect.bottom),
+      Offset(rect.left + length, rect.bottom),
+      paint,
+    );
 
     // Bottom Right
-    canvas.drawLine(Offset(rect.right - length, rect.bottom), Offset(rect.right, rect.bottom), paint);
-    canvas.drawLine(Offset(rect.right, rect.bottom), Offset(rect.right, rect.bottom - length), paint);
+    canvas.drawLine(
+      Offset(rect.right - length, rect.bottom),
+      Offset(rect.right, rect.bottom),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(rect.right, rect.bottom),
+      Offset(rect.right, rect.bottom - length),
+      paint,
+    );
   }
 
   @override

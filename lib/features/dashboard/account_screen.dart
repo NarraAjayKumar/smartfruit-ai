@@ -58,7 +58,10 @@ class AccountScreen extends StatelessWidget {
       elevation: 0,
       backgroundColor: Theme.of(context).primaryColor,
       flexibleSpace: FlexibleSpaceBar(
-        title: const Text("Farm Account", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Farm Account",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: false,
       ),
     );
@@ -84,10 +87,14 @@ class AccountScreen extends StatelessWidget {
           CircleAvatar(
             radius: 45,
             backgroundColor: Colors.green.withValues(alpha: 0.1),
-            backgroundImage: userProvider.avatar == 'custom' && userProvider.customAvatarPath != null
+            backgroundImage:
+                userProvider.avatar == 'custom' &&
+                    userProvider.customAvatarPath != null
                 ? FileImage(File(userProvider.customAvatarPath!))
                 : null,
-            child: userProvider.avatar == 'custom' && userProvider.customAvatarPath != null
+            child:
+                userProvider.avatar == 'custom' &&
+                    userProvider.customAvatarPath != null
                 ? null
                 : Icon(
                     _getAvatarIcon(userProvider.avatar),
@@ -102,7 +109,10 @@ class AccountScreen extends StatelessWidget {
               children: [
                 Text(
                   userProvider.name,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Text(
                   "Mylavaram Farmers Cooperative",
@@ -112,7 +122,9 @@ class AccountScreen extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen(),
+                    ),
                   ),
                   icon: const Icon(Icons.edit, size: 18),
                   label: const Text("Edit Profile"),
@@ -133,7 +145,11 @@ class AccountScreen extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.5,
+      ),
     );
   }
 
@@ -165,19 +181,29 @@ class AccountScreen extends StatelessWidget {
           context,
           Icons.privacy_tip_outlined,
           "Data & Privacy",
-          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DataPrivacyScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DataPrivacyScreen()),
+          ),
         ),
         _buildNavigationTile(
           context,
           Icons.settings_suggest_outlined,
           "Backend Settings",
-          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsScreen()),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSection(BuildContext context, {required String title, required List<Widget> items}) {
+  Widget _buildSection(
+    BuildContext context, {
+    required String title,
+    required List<Widget> items,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -185,7 +211,11 @@ class AccountScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 5, bottom: 10),
           child: Text(
             title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
           ),
         ),
         Container(
@@ -203,8 +233,18 @@ class AccountScreen extends StatelessWidget {
   Widget _buildInfoTile(IconData icon, String title, String value) {
     return ListTile(
       leading: Icon(icon, color: Colors.green),
-      title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-      subtitle: Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 14, color: Colors.grey),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
+        ),
+      ),
     );
   }
 
@@ -213,8 +253,18 @@ class AccountScreen extends StatelessWidget {
       children: [
         ListTile(
           leading: const Icon(Icons.map_outlined, color: Colors.green),
-          title: const Text("Farm Location", style: TextStyle(fontSize: 14, color: Colors.grey)),
-          subtitle: Text(userProvider.currentLocation, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+          title: const Text(
+            "Farm Location",
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          subtitle: Text(
+            userProvider.currentLocation,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
           trailing: TextButton(
             onPressed: () => _showManualLocationDialog(context, userProvider),
             child: const Text("EDIT"),
@@ -223,7 +273,10 @@ class AccountScreen extends StatelessWidget {
         const Divider(height: 1, indent: 50),
         SwitchListTile(
           secondary: const Icon(Icons.gps_fixed_rounded, color: Colors.green),
-          title: const Text("Use Automatic Location", style: TextStyle(fontSize: 14)),
+          title: const Text(
+            "Use Automatic Location",
+            style: TextStyle(fontSize: 14),
+          ),
           value: userProvider.locationMode == "auto",
           activeThumbColor: Colors.green,
           onChanged: (val) async {
@@ -239,20 +292,36 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleTile(IconData icon, String title, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildToggleTile(
+    IconData icon,
+    String title,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return SwitchListTile(
       secondary: Icon(icon, color: Colors.green),
-      title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
       value: value,
       onChanged: onChanged,
       activeColor: Colors.green,
     );
   }
 
-  Widget _buildNavigationTile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
+  Widget _buildNavigationTile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: Icon(icon, color: Colors.green),
-      title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
       trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );
@@ -264,17 +333,25 @@ class AccountScreen extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: () => _showLogoutDialog(context),
         icon: const Icon(Icons.logout, color: Colors.red),
-        label: const Text("Logout", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+        label: const Text(
+          "Logout",
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        ),
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 15),
           side: const BorderSide(color: Colors.red),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
     );
   }
 
-  void _showManualLocationDialog(BuildContext context, UserProvider userProvider) {
+  void _showManualLocationDialog(
+    BuildContext context,
+    UserProvider userProvider,
+  ) {
     final controller = TextEditingController(text: userProvider.manualLocation);
     showDialog(
       context: context,
@@ -282,10 +359,15 @@ class AccountScreen extends StatelessWidget {
         title: const Text("Manual Location"),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: "Enter your farm location"),
+          decoration: const InputDecoration(
+            hintText: "Enter your farm location",
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL"),
+          ),
           TextButton(
             onPressed: () {
               userProvider.updateManualLocation(controller.text.trim());
@@ -306,7 +388,10 @@ class AccountScreen extends StatelessWidget {
         title: const Text("Logout"),
         content: const Text("Are you sure you want to log out?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
           TextButton(
             onPressed: () async {
               await Provider.of<UserProvider>(context, listen: false).logout();
@@ -326,12 +411,15 @@ class AccountScreen extends StatelessWidget {
 
   IconData _getAvatarIcon(String avatar) {
     switch (avatar) {
-      case 'nature': return Icons.nature_people;
-      case 'agriculture': return Icons.agriculture;
-      case 'eco': return Icons.eco;
+      case 'nature':
+        return Icons.nature_people;
+      case 'agriculture':
+        return Icons.agriculture;
+      case 'eco':
+        return Icons.eco;
       case 'person':
-      default: return Icons.person;
+      default:
+        return Icons.person;
     }
   }
 }
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../data/local_storage_service.dart';
 import '../../data/api_service.dart';
 import '../services/location_service.dart';
+import '../services/custom_auth_service.dart';
 
 class UserProvider with ChangeNotifier {
   String _name = "Farmer Raghav";
@@ -19,7 +20,8 @@ class UserProvider with ChangeNotifier {
   double get longitude => _longitude;
   String get avatar => _avatar;
   String get locationMode => _locationMode;
-  String get currentLocation => _locationMode == "auto" ? _currentLocation : _manualLocation;
+  String get currentLocation =>
+      _locationMode == "auto" ? _currentLocation : _manualLocation;
   String get manualLocation => _manualLocation;
   bool get notificationsEnabled => _notificationsEnabled;
   String? get lastLogin => _lastLogin;
@@ -40,7 +42,9 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("Location Error in Provider: $e");
-      _currentLocation = "GPS Unavailable";
+      _latitude = 16.7491;
+      _longitude = 80.6468;
+      _currentLocation = "Mylavaram, AP";
       notifyListeners();
     }
   }
@@ -57,13 +61,14 @@ class UserProvider with ChangeNotifier {
       _avatar = localProfile['avatar'] ?? "person";
       _customAvatarPath = localProfile['customPath'];
     }
-    
+
     // Always check for local custom path even if API succeeds
     final localProfile = await LocalStorageService.getProfile();
-    if (localProfile['customPath'] != null && localProfile['customPath']!.isNotEmpty) {
+    if (localProfile['customPath'] != null &&
+        localProfile['customPath']!.isNotEmpty) {
       _customAvatarPath = localProfile['customPath'];
     }
-    
+
     final settings = await LocalStorageService.getSettings();
     _locationMode = settings['locationMode'];
     _manualLocation = settings['manualLocation'];
@@ -72,17 +77,25 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProfile(String name, String avatar, {String? customAvatarPath}) async {
+  Future<void> updateProfile(
+    String name,
+    String avatar, {
+    String? customAvatarPath,
+  }) async {
     _name = name;
     _avatar = avatar;
     if (customAvatarPath != null) {
       _avatar = 'custom';
       _customAvatarPath = customAvatarPath;
-      await LocalStorageService.saveProfile(name, 'custom', customPath: customAvatarPath);
+      await LocalStorageService.saveProfile(
+        name,
+        'custom',
+        customPath: customAvatarPath,
+      );
     } else {
       await LocalStorageService.saveProfile(name, avatar);
     }
-    
+
     try {
       await ApiService.updateProfile(name: name, avatar: avatar);
     } catch (_) {}
@@ -123,7 +136,7 @@ class UserProvider with ChangeNotifier {
 
   void simulateHarvestAlert(BuildContext context, String crop) {
     if (!_notificationsEnabled) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.green[800],
@@ -140,8 +153,17 @@ class UserProvider with ChangeNotifier {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Harvest Alert: $crop", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  const Text("Optimal ripeness detected. Schedule harvest soon!", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text(
+                    "Harvest Alert: $crop",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    "Optimal ripeness detected. Schedule harvest soon!",
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -165,8 +187,10 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    final authService = CustomAuthService();
+    await authService.logout();
     await LocalStorageService.saveLogoutTimestamp();
-    // In a real app, we might clear temporary state here
+    notifyListeners();
   }
 
   Future<void> resetAll() async {

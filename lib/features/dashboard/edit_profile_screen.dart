@@ -49,7 +49,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           TextButton(
             onPressed: _saveProfile,
-            child: const Text("SAVE", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+            child: const Text(
+              "SAVE",
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -70,7 +76,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               decoration: InputDecoration(
                 labelText: "Farmer Name",
                 prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ],
@@ -94,30 +102,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         CircleAvatar(
           radius: 60,
           backgroundColor: Colors.green.withValues(alpha: 0.1),
-          backgroundImage: _selectedAvatar == 'custom' 
-              ? (_imageFile != null 
-                  ? FileImage(_imageFile!) 
-                  : (userProvider.customAvatarPath != null 
-                      ? FileImage(File(userProvider.customAvatarPath!)) 
-                      : null))
+          backgroundImage: _selectedAvatar == 'custom'
+              ? (_imageFile != null
+                    ? FileImage(_imageFile!)
+                    : (userProvider.customAvatarPath != null
+                          ? FileImage(File(userProvider.customAvatarPath!))
+                          : null))
               : null,
-          child: _selectedAvatar == 'custom' && (_imageFile != null || userProvider.customAvatarPath != null)
-              ? null 
+          child:
+              _selectedAvatar == 'custom' &&
+                  (_imageFile != null || userProvider.customAvatarPath != null)
+              ? null
               : Icon(
-                  avatars.firstWhere((a) => a['id'] == _selectedAvatar, orElse: () => avatars[0])['icon'] as IconData,
+                  avatars.firstWhere(
+                        (a) => a['id'] == _selectedAvatar,
+                        orElse: () => avatars[0],
+                      )['icon']
+                      as IconData,
                   size: 70,
                   color: Colors.green,
                 ),
         ),
         const SizedBox(height: 20),
-        const Text("Choose Avatar", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(
+          "Choose Avatar",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: avatars.map((avatar) {
             bool isSelected = _selectedAvatar == avatar['id'];
             return GestureDetector(
-              onTap: () => setState(() => _selectedAvatar = avatar['id'] as String),
+              onTap: () =>
+                  setState(() => _selectedAvatar = avatar['id'] as String),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 padding: const EdgeInsets.all(8),
@@ -146,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _selectedAvatar,
       customAvatarPath: _imageFile?.path,
     );
-    
+
     if (mounted) {
       Navigator.of(context).pop();
     }

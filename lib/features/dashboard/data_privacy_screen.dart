@@ -43,9 +43,14 @@ class DataPrivacyScreen extends StatelessWidget {
               "Clear Scan History",
               "Remove all past ripeness reports from this device.",
               Icons.delete_sweep_outlined,
-              () => _confirmAction(context, "Clear History", "This will delete all scan history. Continue?", () async {
-                await LocalStorageService.clearHistory();
-              }),
+              () => _confirmAction(
+                context,
+                "Clear History",
+                "This will delete all scan history. Continue?",
+                () async {
+                  await LocalStorageService.clearHistory();
+                },
+              ),
             ),
             const SizedBox(height: 10),
             _buildActionTile(
@@ -53,15 +58,25 @@ class DataPrivacyScreen extends StatelessWidget {
               "Reset All App Data",
               "Wipe all profiles, settings, and credentials.",
               Icons.phonelink_erase_rounded,
-              () => _confirmAction(context, "Reset Data", "This will wipe EVERYTHING and logout. Continue?", () async {
-                await Provider.of<UserProvider>(context, listen: false).resetAll();
-                if (context.mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (route) => false,
-                  );
-                }
-              }),
+              () => _confirmAction(
+                context,
+                "Reset Data",
+                "This will wipe EVERYTHING and logout. Continue?",
+                () async {
+                  await Provider.of<UserProvider>(
+                    context,
+                    listen: false,
+                  ).resetAll();
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  }
+                },
+              ),
               isDestructive: true,
             ),
           ],
@@ -87,9 +102,18 @@ class DataPrivacyScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(height: 5),
-                Text(description, style: TextStyle(color: Colors.grey[700], height: 1.4)),
+                Text(
+                  description,
+                  style: TextStyle(color: Colors.grey[700], height: 1.4),
+                ),
               ],
             ),
           ),
@@ -98,32 +122,57 @@ class DataPrivacyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionTile(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap, {bool isDestructive = false}) {
+  Widget _buildActionTile(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    VoidCallback onTap, {
+    bool isDestructive = false,
+  }) {
     return ListTile(
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      tileColor: isDestructive ? Colors.red.withValues(alpha: 0.05) : Colors.grey[100],
+      tileColor: isDestructive
+          ? Colors.red.withValues(alpha: 0.05)
+          : Colors.grey[100],
       leading: Icon(icon, color: isDestructive ? Colors.red : Colors.green),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: isDestructive ? Colors.red : Colors.black87)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: isDestructive ? Colors.red : Colors.black87,
+        ),
+      ),
       subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
       trailing: const Icon(Icons.chevron_right, size: 20),
     );
   }
 
-  void _confirmAction(BuildContext context, String title, String message, Future<void> Function() action) {
+  void _confirmAction(
+    BuildContext context,
+    String title,
+    String message,
+    Future<void> Function() action,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL"),
+          ),
           TextButton(
             onPressed: () async {
               await action();
               if (context.mounted) {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$title completed")));
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("$title completed")));
               }
             },
             child: const Text("CONFIRM", style: TextStyle(color: Colors.red)),

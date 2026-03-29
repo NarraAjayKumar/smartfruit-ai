@@ -12,7 +12,12 @@ class DebugLogger {
   List<String> get logs => List.unmodifiable(_logs);
 
   void log(String message) {
-    final timestamp = DateTime.now().toString().split('.').first.split(' ').last;
+    final timestamp = DateTime.now()
+        .toString()
+        .split('.')
+        .first
+        .split(' ')
+        .last;
     final logMessage = '[$timestamp] $message';
     _logs.add(logMessage);
     if (_logs.length > 500) _logs.removeAt(0);

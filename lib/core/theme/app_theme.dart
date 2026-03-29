@@ -34,9 +34,7 @@ class AppTheme {
         color: surfaceWhite,
         elevation: 4,
         shadowColor: Colors.black12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -49,14 +47,8 @@ class AppTheme {
           fontSize: 24,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(
-          color: Colors.black87,
-          fontSize: 16,
-        ),
-        bodyMedium: TextStyle(
-          color: Colors.black54,
-          fontSize: 14,
-        ),
+        bodyLarge: TextStyle(color: Colors.black87, fontSize: 16),
+        bodyMedium: TextStyle(color: Colors.black54, fontSize: 14),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -66,10 +58,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

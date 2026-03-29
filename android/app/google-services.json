@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "394025723342",
+    "project_id": "smartfruit-ai",
+    "storage_bucket": "smartfruit-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394025723342:android:d41957f83bb6abf330779f",
+        "android_client_info": {
+          "package_name": "com.example.smartfruit_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394025723342-u9usm4r0vvhr8h2cm71ebm9af8hnlavr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG92c4wHAQuQV8LG8GBOBkcHEkaULb4_k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394025723342-u9usm4r0vvhr8h2cm71ebm9af8hnlavr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

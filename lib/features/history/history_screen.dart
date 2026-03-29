@@ -40,7 +40,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          
+
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return _buildEmptyState(context);
           }
@@ -53,9 +53,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               final item = history[index];
               final date = DateTime.parse(item['date']);
               final confidence = item['confidence'] ?? 0.0;
-              
+
               final Color cropColor = _getColor(item['crop']);
-              
+
               return Card(
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 12),
@@ -64,7 +64,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   side: BorderSide(color: Colors.grey.shade100),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -73,8 +76,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                     child: Icon(_getIcon(item['crop']), color: cropColor),
                   ),
-                  title: Text(item['crop'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  subtitle: Text("${date.day}/${date.month}/${date.year} • ${item['count']} Items"),
+                  title: Text(
+                    item['crop'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: Text(
+                    "${date.day}/${date.month}/${date.year} • ${item['count']} Items",
+                  ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -87,7 +98,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           fontSize: 16,
                         ),
                       ),
-                      const Text("Accuracy", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                      const Text(
+                        "Accuracy",
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
@@ -104,11 +118,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_toggle_off_rounded, size: 80, color: Colors.grey.withValues(alpha: 0.3)),
+          Icon(
+            Icons.history_toggle_off_rounded,
+            size: 80,
+            color: Colors.grey.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 20),
           const Text(
             "No scans yet",
-            style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -122,20 +144,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   IconData _getIcon(String crop) {
     switch (crop.toLowerCase()) {
-      case 'watermelon': return Icons.water_drop_rounded;
-      case 'tomato': return Icons.circle;
-      case 'cucumber': return Icons.eco_rounded;
-      default: return Icons.eco;
+      case 'watermelon':
+        return Icons.water_drop_rounded;
+      case 'tomato':
+        return Icons.circle;
+      case 'cucumber':
+        return Icons.eco_rounded;
+      default:
+        return Icons.eco;
     }
   }
 
   Color _getColor(String crop) {
     switch (crop.toLowerCase()) {
-      case 'watermelon': return Colors.red;
-      case 'tomato': return Colors.orange;
-      case 'cucumber': return Colors.green;
-      default: return Colors.green;
+      case 'watermelon':
+        return Colors.red;
+      case 'tomato':
+        return Colors.orange;
+      case 'cucumber':
+        return Colors.green;
+      default:
+        return Colors.green;
     }
   }
 }
-

@@ -49,7 +49,7 @@ class LocalAiService {
   static Future<void> init(String cropName) async {
     final crop = cropName.toLowerCase();
     String modelPath;
-    
+
     if (crop == 'tomato') {
       modelPath = 'assets/models/tomato.tflite';
     } else if (crop == 'cucumber') {
@@ -64,7 +64,9 @@ class LocalAiService {
     try {
       final opts = InterpreterOptions()..threads = 4;
       bool assetExists = await _checkAssetExists(modelPath);
-      final finalPath = assetExists ? modelPath : 'assets/models/fruit_detector.tflite';
+      final finalPath = assetExists
+          ? modelPath
+          : 'assets/models/fruit_detector.tflite';
 
       _interpreter?.close();
       _interpreter = await Interpreter.fromAsset(finalPath, options: opts);
@@ -78,7 +80,6 @@ class LocalAiService {
     }
   }
 
-
   static Future<bool> _checkAssetExists(String path) async {
     try {
       await rootBundle.load(path);
@@ -88,7 +89,10 @@ class LocalAiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> predict(String imagePath, String cropName) async {
+  static Future<Map<String, dynamic>?> predict(
+    String imagePath,
+    String cropName,
+  ) async {
     // 1. Load the CORRECT model for this section directly
     await init(cropName);
     if (_interpreter == null) return null;
@@ -107,15 +111,23 @@ class LocalAiService {
     final requestedFruit = cropName.toLowerCase();
 
     // 3. Filter detections: keep ONLY detections matching the requested fruit
-    final matchingDets = allResults.where((d) => d.fruit == requestedFruit).toList();
-    final otherDets = allResults.where((d) => d.fruit != requestedFruit && d.fruit != 'unknown').toList();
+    final matchingDets = allResults
+        .where((d) => d.fruit == requestedFruit)
+        .toList();
+    final otherDets = allResults
+        .where((d) => d.fruit != requestedFruit && d.fruit != 'unknown')
+        .toList();
 
     // 4. Wrong fruit logic: if NO matching detections but OTHER fruit found
     final bool isWrongFruit = matchingDets.isEmpty && otherDets.isNotEmpty;
-    final String suggestedCrop = isWrongFruit ? otherDets.first.fruit : requestedFruit;
+    final String suggestedCrop = isWrongFruit
+        ? otherDets.first.fruit
+        : requestedFruit;
 
     // Use matching detections if available, otherwise use all results for drawing
-    final List<_Det> finalKept = matchingDets.isNotEmpty ? matchingDets : allResults;
+    final List<_Det> finalKept = matchingDets.isNotEmpty
+        ? matchingDets
+        : allResults;
     final _Det finalDet = finalKept.first;
 
     // 5. Draw boxes with STAGE-SPECIFIC COLORS
@@ -131,25 +143,47 @@ class LocalAiService {
       final y2 = (det.top + det.height).toInt();
 
       final color = _getStageColor(det.fruit, det.label);
-      
-      img.drawRect(originalImg, x1: x1, y1: y1, x2: x2, y2: y2, color: color, thickness: thickness);
 
-      final labelStr = isWrongFruit 
+      img.drawRect(
+        originalImg,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        color: color,
+        thickness: thickness,
+      );
+
+      final labelStr = isWrongFruit
           ? "${det.fruit} ${det.label} ${det.conf.toStringAsFixed(2)}"
           : "${det.label} ${det.conf.toStringAsFixed(2)}";
-      
-      final charW = (origW / 1000) > 1.5 ? 28 : 14; 
+
+      final charW = (origW / 1000) > 1.5 ? 28 : 14;
       final charH = (origW / 1000) > 1.5 ? 50 : 30;
-      final tw = labelStr.length * charW + paddingH; 
+      final tw = labelStr.length * charW + paddingH;
       final th = charH + paddingV;
-      
+
       final bx1 = x1;
       final by1 = (y1 - th).clamp(0, origH);
       final bx2 = (x1 + tw).clamp(0, origW);
       final by2 = (y1).clamp(0, origH);
 
-      img.fillRect(originalImg, x1: bx1, y1: by1, x2: bx2, y2: by2, color: color);
-      img.drawString(originalImg, labelStr, font: fontSize, x: bx1 + (paddingH ~/ 2), y: by1 + (paddingV ~/ 2), color: img.ColorRgb8(0, 0, 0));
+      img.fillRect(
+        originalImg,
+        x1: bx1,
+        y1: by1,
+        x2: bx2,
+        y2: by2,
+        color: color,
+      );
+      img.drawString(
+        originalImg,
+        labelStr,
+        font: fontSize,
+        x: bx1 + (paddingH ~/ 2),
+        y: by1 + (paddingV ~/ 2),
+        color: img.ColorRgb8(0, 0, 0),
+      );
     }
 
     // 6. Save and return
@@ -169,34 +203,48 @@ class LocalAiService {
       'originalWidth': origW,
       'originalHeight': origH,
       'annotatedPath': annotatedPath,
-      'allDetections': finalKept.map((d) => {
-        'fruit': d.fruit,
-        'label': d.label,
-        'confidence': d.conf,
-        'box': [d.left, d.top, d.width, d.height],
-      }).toList(),
+      'allDetections': finalKept
+          .map(
+            (d) => {
+              'fruit': d.fruit,
+              'label': d.label,
+              'confidence': d.conf,
+              'box': [d.left, d.top, d.width, d.height],
+            },
+          )
+          .toList(),
     };
   }
 
   static Future<List<_Det>?> _runRawInference(img.Image originalImg) async {
     final origW = originalImg.width;
     final origH = originalImg.height;
-    final resized = img.copyResize(originalImg, width: _inputSize, height: _inputSize);
+    final resized = img.copyResize(
+      originalImg,
+      width: _inputSize,
+      height: _inputSize,
+    );
 
-    final input = List.generate(1, (b) => 
-      List.generate(_inputSize, (y) =>
-        List.generate(_inputSize, (x) {
+    final input = List.generate(
+      1,
+      (b) => List.generate(
+        _inputSize,
+        (y) => List.generate(_inputSize, (x) {
           final p = resized.getPixel(x, y);
           return [p.r / 255.0, p.g / 255.0, p.b / 255.0];
-        })
-      )
+        }),
+      ),
     );
 
     final outShape = _interpreter!.getOutputTensor(0).shape;
-    final raw3d = List.generate(outShape[0], (_) =>
-      List.generate(outShape[1], (_) =>
-        List.generate(outShape[2], (_) => 0.0)));
-    
+    final raw3d = List.generate(
+      outShape[0],
+      (_) => List.generate(
+        outShape[1],
+        (_) => List.generate(outShape[2], (_) => 0.0),
+      ),
+    );
+
     _interpreter!.run(input, raw3d);
 
     final bool isNCX = outShape[1] < outShape[2];
@@ -214,32 +262,37 @@ class LocalAiService {
     }
 
     for (int i = 0; i < anchors; i++) {
-        double maxClassScore = 0;
-        int bestClassIdx = -1;
-        for (int c = 4; c < channels; c++) {
-          final score = isNCX ? raw3d[0][c][i] : raw3d[0][i][c];
-          if (score > maxClassScore) {
-            maxClassScore = score;
-            bestClassIdx = c - 4;
-          }
+      double maxClassScore = 0;
+      int bestClassIdx = -1;
+      for (int c = 4; c < channels; c++) {
+        final score = isNCX ? raw3d[0][c][i] : raw3d[0][i][c];
+        if (score > maxClassScore) {
+          maxClassScore = score;
+          bestClassIdx = c - 4;
         }
-        if (maxClassScore < _confThreshold) continue;
+      }
+      if (maxClassScore < _confThreshold) continue;
 
-        final info = (bestClassIdx >= 0 && bestClassIdx < currentLabels.length) 
-            ? currentLabels[bestClassIdx] 
-            : {'fruit': 'unknown', 'label': 'unknown'};
-        
-        final xc = isNCX ? raw3d[0][0][i] : raw3d[0][i][0];
-        final yc = isNCX ? raw3d[0][1][i] : raw3d[0][i][1];
-        final bw = isNCX ? raw3d[0][2][i] : raw3d[0][i][2];
-        final bh = isNCX ? raw3d[0][3][i] : raw3d[0][i][3];
+      final info = (bestClassIdx >= 0 && bestClassIdx < currentLabels.length)
+          ? currentLabels[bestClassIdx]
+          : {'fruit': 'unknown', 'label': 'unknown'};
 
-        // Adaptive scaling: detect if coords are in pixel space (0-640) or normalized (0-1)
-        final bool isPixelSpace = xc > 2.0 || yc > 2.0;
-        final double sx = isPixelSpace ? origW / _inputSize.toDouble() : origW.toDouble();
-        final double sy = isPixelSpace ? origH / _inputSize.toDouble() : origH.toDouble();
+      final xc = isNCX ? raw3d[0][0][i] : raw3d[0][i][0];
+      final yc = isNCX ? raw3d[0][1][i] : raw3d[0][i][1];
+      final bw = isNCX ? raw3d[0][2][i] : raw3d[0][i][2];
+      final bh = isNCX ? raw3d[0][3][i] : raw3d[0][i][3];
 
-        raws.add(_Det(
+      // Adaptive scaling: detect if coords are in pixel space (0-640) or normalized (0-1)
+      final bool isPixelSpace = xc > 2.0 || yc > 2.0;
+      final double sx = isPixelSpace
+          ? origW / _inputSize.toDouble()
+          : origW.toDouble();
+      final double sy = isPixelSpace
+          ? origH / _inputSize.toDouble()
+          : origH.toDouble();
+
+      raws.add(
+        _Det(
           classId: bestClassIdx,
           fruit: info['fruit']!,
           label: info['label']!,
@@ -248,7 +301,8 @@ class LocalAiService {
           top: (yc - bh / 2) * sy,
           width: bw * sx,
           height: bh * sy,
-        ));
+        ),
+      );
     }
     return _nms(raws);
   }
@@ -256,28 +310,33 @@ class LocalAiService {
   static img.ColorRgb8 _getStageColor(String fruit, String label) {
     if (fruit.toLowerCase() == 'tomato') {
       final l = label.toLowerCase();
-      if (l.contains('unripe'))   return img.ColorRgb8(67, 160, 71); // Green
-      if (l.contains('semi'))     return img.ColorRgb8(255, 179, 0); // Amber/Orange
-      if (l.contains('ripe'))     return img.ColorRgb8(229, 57, 53); // Red
+      if (l.contains('unripe')) return img.ColorRgb8(67, 160, 71); // Green
+      if (l.contains('semi')) return img.ColorRgb8(255, 179, 0); // Amber/Orange
+      if (l.contains('ripe')) return img.ColorRgb8(229, 57, 53); // Red
     }
-    
+
     switch (fruit.toLowerCase()) {
-      case 'watermelon': return img.ColorRgb8(27, 94, 32);    // Dark Green
-      case 'cucumber':   return img.ColorRgb8(67, 160, 71);   // Green
-      default:           return img.ColorRgb8(0, 255, 255);   // Cyan
+      case 'watermelon':
+        return img.ColorRgb8(27, 94, 32); // Dark Green
+      case 'cucumber':
+        return img.ColorRgb8(67, 160, 71); // Green
+      default:
+        return img.ColorRgb8(0, 255, 255); // Cyan
     }
   }
-
 
   static img.ColorRgb8 _getImgColor(String fruit) {
     switch (fruit.toLowerCase()) {
-      case 'tomato':     return img.ColorRgb8(229, 57, 53);   // Red
-      case 'watermelon': return img.ColorRgb8(27, 94, 32);    // Dark Green
-      case 'cucumber':   return img.ColorRgb8(67, 160, 71);   // Green
-      default:           return img.ColorRgb8(0, 255, 255);   // Cyan fallback
+      case 'tomato':
+        return img.ColorRgb8(229, 57, 53); // Red
+      case 'watermelon':
+        return img.ColorRgb8(27, 94, 32); // Dark Green
+      case 'cucumber':
+        return img.ColorRgb8(67, 160, 71); // Green
+      default:
+        return img.ColorRgb8(0, 255, 255); // Cyan fallback
     }
   }
-
 
   static List<_Det> _nms(List<_Det> dets) {
     if (dets.isEmpty) return [];
@@ -322,4 +381,3 @@ class _Det {
     required this.height,
   });
 }
-

@@ -18,7 +18,11 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.offline_bolt_rounded, size: 64, color: Colors.green),
+            const Icon(
+              Icons.offline_bolt_rounded,
+              size: 64,
+              color: Colors.green,
+            ),
             const SizedBox(height: 20),
             const Text(
               "Fully Offline Mode",
@@ -39,11 +43,17 @@ class SettingsScreen extends StatelessWidget {
               ),
               child: const Column(
                 children: [
-                   Row(
+                  Row(
                     children: [
                       Icon(Icons.check_circle_outline, color: Colors.green),
                       SizedBox(width: 12),
-                      Text("System Status", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                      Text(
+                        "System Status",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 8),
@@ -75,13 +85,15 @@ class SettingsScreen extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.bug_report_outlined, color: Colors.orange),
           title: const Text("Open System Debug Console"),
-          subtitle: const Text("View real-time technical logs from the application."),
+          subtitle: const Text(
+            "View real-time technical logs from the application.",
+          ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () {
-             Navigator.push(
-               context,
-               MaterialPageRoute(builder: (context) => const DebugConsole()),
-             );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DebugConsole()),
+            );
           },
         ),
       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
 import 'account_screen.dart';
+import '../advisor/advisor_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,6 +15,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const DashboardScreen(),
+    const AdvisorScreen(),
     const AccountScreen(),
   ];
 
@@ -34,6 +36,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_rounded),
             label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.psychology_rounded),
+            label: 'AI Advisor',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_rounded),

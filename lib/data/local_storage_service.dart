@@ -14,7 +14,11 @@ class LocalStorageService {
   static const String _keyCustomAvatarPath = "custom_avatar_path";
 
   // Profile Methods
-  static Future<void> saveProfile(String name, String avatar, {String? customPath}) async {
+  static Future<void> saveProfile(
+    String name,
+    String avatar, {
+    String? customPath,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserName, name);
     await prefs.setString(_keyUserAvatar, avatar);
@@ -56,7 +60,8 @@ class LocalStorageService {
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyLocationMode, locationMode);
-    if (manualLocation != null) await prefs.setString(_keyManualLocation, manualLocation);
+    if (manualLocation != null)
+      await prefs.setString(_keyManualLocation, manualLocation);
     await prefs.setBool(_keyNotificationsEnabled, notificationsEnabled);
   }
 
@@ -73,14 +78,14 @@ class LocalStorageService {
   static Future<void> saveScan(Map<String, dynamic> scan) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_keyScanHistory) ?? [];
-    
+
     // Add date to scan
     scan['date'] = DateTime.now().toIso8601String();
     history.insert(0, jsonEncode(scan));
-    
+
     // Keep last 50 scans
     if (history.length > 50) history.removeLast();
-    
+
     await prefs.setStringList(_keyScanHistory, history);
   }
 

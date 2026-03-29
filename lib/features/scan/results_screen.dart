@@ -39,26 +39,31 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
   Color _getCropColor(String crop) {
     switch (crop.toLowerCase()) {
-      case 'tomato':     return const Color(0xFFE53935); // Red
-      case 'watermelon': return const Color(0xFF1B5E20); // Dark Green
-      case 'cucumber':   return const Color(0xFF43A047); // Green
-      default:           return const Color(0xFF43A047);
+      case 'tomato':
+        return const Color(0xFFE53935); // Red
+      case 'watermelon':
+        return const Color(0xFF1B5E20); // Dark Green
+      case 'cucumber':
+        return const Color(0xFF43A047); // Green
+      default:
+        return const Color(0xFF43A047);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     final String cropName = widget.scanResult['crop'] ?? 'Fruit';
     // Use the primary crop color (Green for watermelon/cucumber, red for tomato)
     final Color primaryColor = _getCropColor(cropName);
-    
+
     // Calculate display values
-    final double topConfidence = _detections.isNotEmpty 
-        ? (_detections.first['confidence'] as double? ?? 0.0) 
+    final double topConfidence = _detections.isNotEmpty
+        ? (_detections.first['confidence'] as double? ?? 0.0)
         : (widget.scanResult['confidence'] as double? ?? 0.0);
-    
-    final displayFile = _annotatedPath != null ? File(_annotatedPath!) : widget.imageFile;
+
+    final displayFile = _annotatedPath != null
+        ? File(_annotatedPath!)
+        : widget.imageFile;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F8E9), // Light green background
@@ -71,13 +76,20 @@ class _ResultsScreenState extends State<ResultsScreen> {
         ),
         title: Text(
           "Analysis Result",
-          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 22),
+          style: TextStyle(
+            color: primaryColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
         ),
 
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.bug_report_outlined, color: Color(0xFF2E7D32)),
+            icon: const Icon(
+              Icons.bug_report_outlined,
+              color: Color(0xFF2E7D32),
+            ),
             onPressed: () {}, // Debug log placeholder
           ),
         ],
@@ -92,10 +104,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: InteractiveViewer(
-                  child: Image.file(
-                    displayFile,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Image.file(displayFile, fit: BoxFit.contain),
                 ),
               ),
             ),
@@ -108,7 +117,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15, offset: Offset(0, -5))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 15,
+                  offset: Offset(0, -5),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,8 +136,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     Row(
                       children: [
                         Icon(
-                          cropName.toLowerCase() == 'watermelon' ? Icons.water_drop : Icons.eco,
-                          color: primaryColor, 
+                          cropName.toLowerCase() == 'watermelon'
+                              ? Icons.water_drop
+                              : Icons.eco,
+                          color: primaryColor,
                           size: 32,
                         ),
 
@@ -139,7 +156,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: primaryColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(25),
@@ -153,7 +173,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -166,33 +185,38 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
-                // Detection List matched to mockup wording
-                  ..._detections.take(1).map((det) {
-                    final label = det['label'] ?? 'unknown';
-                    final conf = (det['confidence'] as double? ?? 0.0);
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: primaryColor, width: 2),
-                        ),
-                        child: Icon(Icons.check, color: primaryColor, size: 16),
-                      ),
-                      title: Text(
-                        "$label recognized",
 
+                // Detection List matched to mockup wording
+                ..._detections.take(1).map((det) {
+                  final label = det['label'] ?? 'unknown';
+                  final conf = (det['confidence'] as double? ?? 0.0);
+                  
+                  // Professional Harvest Logic
+                  final bool isReady = label.toLowerCase().contains("good-to-harvest");
+                  final Color statusColor = isReady ? Colors.green : Colors.red;
+                  final String displayLabel = isReady ? "Ready for Harvest" : "Not Ready for Harvest";
+                  final IconData statusIcon = isReady ? Icons.check_circle_rounded : Icons.cancel_rounded;
+
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: statusColor, width: 2),
+                      ),
+                      child: Icon(statusIcon, color: statusColor, size: 16),
+                    ),
+                    title: Text(
+                      displayLabel,
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 18,
-                        color: primaryColor,
+                        color: statusColor,
                       ),
                     ),
-
                     subtitle: Text(
-                      "${(conf * 100).toStringAsFixed(0)}% match",
+                      "${(conf * 100).toStringAsFixed(0)}% confidence",
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -201,9 +225,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     ),
                   );
                 }),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Big Red 'FINISH & SAVE' Button
                 SizedBox(
                   width: double.infinity,
@@ -215,16 +239,20 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         'crop': cropName,
                         'confidence': topConfidence,
                         'count': _detections.length,
-                        'freshness': _detections.isNotEmpty ? _detections.first['label'] : 'unknown',
+                        'freshness': _detections.isNotEmpty
+                            ? _detections.first['label']
+                            : 'unknown',
                       });
-                      
+
                       if (mounted) {
                         Navigator.pop(context);
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       elevation: 0,
                     ),
                     child: const Text(
@@ -236,7 +264,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         letterSpacing: 1,
                       ),
                     ),
-
                   ),
                 ),
               ],
@@ -247,4 +274,3 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 }
-

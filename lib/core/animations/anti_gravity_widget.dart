@@ -27,10 +27,7 @@ class _AntiGravityWidgetState extends State<AntiGravityWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.speed,
-    );
+    _controller = AnimationController(vsync: this, duration: widget.speed);
 
     _animation = Tween<double>(begin: 0, end: 2 * pi).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
@@ -57,10 +54,7 @@ class _AntiGravityWidgetState extends State<AntiGravityWidget>
       builder: (context, child) {
         // Organic vertical floating motion using sine wave
         final double offset = sin(_animation.value) * widget.amplitude;
-        return Transform.translate(
-          offset: Offset(0, offset),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(0, offset), child: child);
       },
       child: widget.child,
     );
