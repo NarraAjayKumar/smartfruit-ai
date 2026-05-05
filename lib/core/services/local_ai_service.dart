@@ -42,7 +42,7 @@ class LocalAiService {
     {'fruit': 'cucumber', 'label': 'maturing'},
   ];
 
-  static const double _confThreshold = 0.40;
+  static const double _confThreshold = 0.35;
   static const double _iouThreshold = 0.45;
   static const int _inputSize = 640;
 
@@ -282,6 +282,11 @@ class LocalAiService {
       final bw = isNCX ? raw3d[0][2][i] : raw3d[0][i][2];
       final bh = isNCX ? raw3d[0][3][i] : raw3d[0][i][3];
 
+      // Aspect Ratio Filter: Fruits are typically rounded (square/oval boxes).
+      // Leaves and stalks are often very thin or wide.
+      final ratio = bw / bh;
+      if (ratio > 2.5 || ratio < 0.4) continue; // Skip thin/wide detections
+
       // Adaptive scaling: detect if coords are in pixel space (0-640) or normalized (0-1)
       final bool isPixelSpace = xc > 2.0 || yc > 2.0;
       final double sx = isPixelSpace
@@ -308,21 +313,29 @@ class LocalAiService {
   }
 
   static img.ColorRgb8 _getStageColor(String fruit, String label) {
-    if (fruit.toLowerCase() == 'tomato') {
-      final l = label.toLowerCase();
+    final f = fruit.toLowerCase();
+    final l = label.toLowerCase();
+
+    if (f == 'tomato') {
       if (l.contains('unripe')) return img.ColorRgb8(67, 160, 71); // Green
       if (l.contains('semi')) return img.ColorRgb8(255, 179, 0); // Amber/Orange
       if (l.contains('ripe')) return img.ColorRgb8(229, 57, 53); // Red
     }
 
-    switch (fruit.toLowerCase()) {
-      case 'watermelon':
-        return img.ColorRgb8(27, 94, 32); // Dark Green
-      case 'cucumber':
-        return img.ColorRgb8(67, 160, 71); // Green
-      default:
-        return img.ColorRgb8(0, 255, 255); // Cyan
+    if (f == 'watermelon' || f == 'cucumber') {
+      // If label indicates not ready, use Red
+      if (l.contains('not-good') ||
+          l.contains('unripe') ||
+          l.contains('developing')) {
+        return img.ColorRgb8(229, 57, 53); // Red
+      }
+      // Otherwise use Green/Dark Green
+      return f == 'watermelon'
+          ? img.ColorRgb8(27, 94, 32) // Dark Green
+          : img.ColorRgb8(67, 160, 71); // Green
     }
+
+    return img.ColorRgb8(0, 255, 255); // Cyan fallback
   }
 
   static img.ColorRgb8 _getImgColor(String fruit) {

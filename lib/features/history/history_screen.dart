@@ -54,6 +54,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               final date = DateTime.parse(item['date']);
               final confidence = item['confidence'] ?? 0.0;
 
+              final label = (item['label'] ?? item['freshness'] ?? item['freshness_label'])?.toString().toLowerCase();
+              final isReady = label == 'good-to-harvest' || label == 'ripe';
+              final Color statusColor = isReady ? Colors.green : Colors.red;
               final Color cropColor = _getColor(item['crop']);
 
               return Card(
@@ -71,10 +74,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: cropColor.withValues(alpha: 0.1),
+                      color: statusColor.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(_getIcon(item['crop']), color: cropColor),
+                    child: Icon(_getIcon(item['crop']), color: statusColor),
                   ),
                   title: Text(
                     item['crop'],
@@ -93,7 +96,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       Text(
                         "${(confidence * 100).toInt()}%",
                         style: TextStyle(
-                          color: cropColor,
+                          color: statusColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),

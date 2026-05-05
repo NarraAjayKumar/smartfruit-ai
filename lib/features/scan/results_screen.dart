@@ -192,7 +192,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   final conf = (det['confidence'] as double? ?? 0.0);
                   
                   // Professional Harvest Logic
-                  final bool isReady = label.toLowerCase().contains("good-to-harvest");
+                  final bool isReady = label.toLowerCase() == "good-to-harvest" || label.toLowerCase() == "ripe";
                   final Color statusColor = isReady ? Colors.green : Colors.red;
                   final String displayLabel = isReady ? "Ready for Harvest" : "Not Ready for Harvest";
                   final IconData statusIcon = isReady ? Icons.check_circle_rounded : Icons.cancel_rounded;
@@ -239,6 +239,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         'crop': cropName,
                         'confidence': topConfidence,
                         'count': _detections.length,
+                        'label': _detections.isNotEmpty
+                            ? _detections.first['label']
+                            : 'unknown',
                         'freshness': _detections.isNotEmpty
                             ? _detections.first['label']
                             : 'unknown',

@@ -32,7 +32,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     int totalScans = _history.length;
-    int readyCount = _history.where((s) => s['label']?.toString().contains('good-to-harvest') ?? false).length;
+    int readyCount = _history.where((s) {
+      final label = (s['label'] ?? s['freshness'])?.toString().toLowerCase();
+      return label == 'good-to-harvest' || label == 'ripe';
+    }).length;
     double successRate = totalScans > 0 ? (readyCount / totalScans) * 100 : 0;
 
     return Scaffold(
@@ -103,7 +106,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Widget _buildActivityChart() {
-    // Simple mock "chart" using rows/containers for production look without heavy dependencies
+    // Calculate actual scan counts for the last 7 days
+    final now = DateTime.now();
+    final last7Days = List.generate(7, (i) => now.subtract(Duration(days: 6 - i)));
+    
+    final counts = last7Days.map((date) {
+      final dateStr = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+      return _history.where((s) => s['date']?.toString().startsWith(dateStr) ?? false).length;
+    }).toList();
+
+    final maxCount = counts.reduce((a, b) => a > b ? a : b);
+    final double chartHeight = 100.0;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -114,19 +128,28 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(7, (index) {
-          double height = 20.0 + (index * 15.0 % 60);
+          final count = counts[index];
+          final dayLabel = index == 6 ? "Today" : "D${index + 1}";
+          // Scale height: minimum 5 for visibility, max chartHeight
+          double barHeight = maxCount > 0 ? (count / maxCount * chartHeight) : 0;
+          if (count > 0 && barHeight < 10) barHeight = 10;
+          if (count == 0) barHeight = 5;
+
           return Column(
             children: [
-              Container(
-                width: 15,
-                height: height,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: index == 6 ? 1.0 : 0.3),
-                  borderRadius: BorderRadius.circular(5),
+              Tooltip(
+                message: "$count scans",
+                child: Container(
+                  width: 15,
+                  height: barHeight,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withValues(alpha: index == 6 ? 1.0 : 0.4),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
-              Text("D${index + 1}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+              Text(dayLabel, style: const TextStyle(fontSize: 10, color: Colors.grey)),
             ],
           );
         }),
@@ -150,7 +173,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       itemCount: _history.length > 5 ? 5 : _history.length,
       itemBuilder: (context, index) {
         final scan = _history[index];
-        final isReady = scan['label']?.toString().contains('good-to-harvest') ?? false;
+        final label = (scan['label'] ?? scan['freshness'])?.toString().toLowerCase();
+        final isReady = label == 'good-to-harvest' || label == 'ripe';
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(12),

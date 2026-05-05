@@ -131,26 +131,12 @@ class _AdvisorScreenState extends State<AdvisorScreen> {
     setState(() => _selectedImage = null);
   }
 
-  bool _isTelugu(String text) {
-    return RegExp(r'[\u0C00-\u0C7F]').hasMatch(text);
-  }
 
-  void _speak(String text, {String? langCode}) async {
-    await _flutterTts.stop(); // Auto-stop previous speech
-    
-    // Explicit lang code or auto-detect
-    bool isTelugu = langCode != null ? langCode == "te-IN" : _isTelugu(text);
-    
-    if (isTelugu) {
-      await _flutterTts.setLanguage("te-IN");
-      await _flutterTts.setPitch(1.0);
-      await _flutterTts.setSpeechRate(0.42);
-    } else {
-      await _flutterTts.setLanguage("en-US");
-      await _flutterTts.setPitch(1.0);
-      await _flutterTts.setSpeechRate(0.5);
-    }
-    
+  void _speak(String text) async {
+    await _flutterTts.stop();
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.speak(text.trim());
   }
 
@@ -163,24 +149,11 @@ class _AdvisorScreenState extends State<AdvisorScreen> {
         q.contains("upload image") ||
         q.contains("what is this app") ||
         q.contains("guide") ||
-        q.contains("help") ||
-        q.contains("ఎలా వాడాలి") ||
-        q.contains("సహాయం");
+        q.contains("help");
   }
 
-  String _getAppGuide(bool isTelugu) {
-    if (isTelugu) {
-      return """
-స్మార్ట్ ఫ్రూట్ AI యాప్ ఉపయోగించే విధానం:
-
-1. డాష్ బోర్డ్ ఓపెన్ చేయండి.
-2. పంటను ఎంచుకోండి (ఉదా: పుచ్చకాయ, టమోటా).
-3. ఫోటో తీయండి లేదా అప్ లోడ్ చేయండి.
-4. ఫలితాన్ని చూడండి (పండినదా లేదా కాదు).
-5. AI అడ్వైజర్ ద్వారా సలహాలు పొందండి.
-""";
-    } else {
-      return """
+  String _getAppGuide() {
+    return """
 How to use SmartFruit AI:
 
 1. Open Dashboard.
@@ -189,7 +162,6 @@ How to use SmartFruit AI:
 4. View ripeness result.
 5. Use AI Advisor for suggestions.
 """;
-    }
   }
 
   @override
@@ -223,9 +195,8 @@ How to use SmartFruit AI:
     _scrollToBottom();
 
     // 1. Check for App Guide Intent (No API call)
-    final bool isTeluguInput = _isTelugu(text);
     if (_isAppQuery(text)) {
-      final String guide = _getAppGuide(isTeluguInput);
+      final String guide = _getAppGuide();
       final String aiTime = DateFormat('HH:mm').format(DateTime.now());
 
       setState(() {
@@ -237,7 +208,7 @@ How to use SmartFruit AI:
         });
       });
       
-      _speak(guide, langCode: isTeluguInput ? "te-IN" : "en-US");
+      _speak(guide);
       _scrollToBottom();
       return;
     }
@@ -276,9 +247,7 @@ How to use SmartFruit AI:
         _isThinking = false;
         _messages.add({
           "role": "advisor", 
-          "content": isTeluguInput 
-              ? "సర్వర్ బిజీగా ఉంది. మళ్లీ ప్రయత్నించండి." 
-              : "Server busy. Please try again.",
+          "content": "Server busy. Please try again.",
           "time": DateFormat('HH:mm').format(DateTime.now())
         });
       });
@@ -398,20 +367,20 @@ How to use SmartFruit AI:
             ),
             const SizedBox(height: 24),
             Text(
-              "Welcome to SmartFruit AI, \n$_userName! 🇮🇳",
+              "Welcome to SmartFruit AI, \n$_userName!",
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
-              "Hello ${_userName.split(' ')[0]}! How can I help you today?\nనేను మీకు ఎలా సహాయపడగలను?",
+              "Hello ${_userName.split(' ')[0]}! How can I help you today?",
               style: const TextStyle(fontSize: 16, color: Colors.blueGrey, height: 1.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-            _buildQuickPrompt("Identify Pests / తెగుళ్లను గుర్తించండి", Icons.bug_report_rounded, Colors.orange),
-            _buildQuickPrompt("Weather Advice / వాతావరణ సలహా", Icons.wb_sunny_rounded, Colors.blue),
-            _buildQuickPrompt("Crop Care / పంట సంరక్షణ", Icons.agriculture_rounded, Colors.green),
+            _buildQuickPrompt("Identify Pests", Icons.bug_report_rounded, Colors.orange),
+            _buildQuickPrompt("Weather Advice", Icons.wb_sunny_rounded, Colors.blue),
+            _buildQuickPrompt("Crop Care", Icons.agriculture_rounded, Colors.green),
           ],
         ),
       ),
@@ -462,7 +431,7 @@ How to use SmartFruit AI:
   }
   Widget _buildSuggestionChips() {
     final List<String> suggestions = [
-      _isTelugu(_messages.lastOrNull?["content"] ?? "") ? "మరిన్ని వివరాలు" : "Tell me more",
+      "Tell me more",
       "How to use app?",
       "Weather Advice",
       "Pest Detection",
@@ -553,7 +522,7 @@ How to use SmartFruit AI:
                                 Icon(_isSpeaking ? Icons.graphic_eq : Icons.volume_up_rounded, size: 18, color: Theme.of(context).primaryColor),
                                 const SizedBox(width: 8),
                                 Text(
-                                  _isSpeaking ? "Speaking..." : (_isTelugu(msg["content"]!) ? "Listen (Telugu)" : "Listen (English)"),
+                                  _isSpeaking ? "Speaking..." : "Listen",
                                   style: TextStyle(fontSize: 11, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -602,7 +571,7 @@ How to use SmartFruit AI:
             ),
             const SizedBox(width: 8),
             Text(
-              _isTelugu(_messages.lastOrNull?["content"] ?? "") ? "ఆలోచిస్తున్నాను..." : "AI Thinking...",
+              "AI Thinking...",
               style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.black54),
             ),
           ],
